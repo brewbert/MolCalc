@@ -1,4 +1,4 @@
-#! /usr/bin/env lua
+#!/usr/bin/env lua
 --[[
 Copyright 2010 Hubert Hanghofer -- hubert.hanghofer.net
 This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --]]
-Element = {
+
+local _M = {}
+
+_M.Element = {
 H=1.00794,
 D=2.014102, 
 He=4.002602,
@@ -129,7 +132,7 @@ Uun=271.0,
 Uuu=272.0
 }
 
-Digit = {
+_M.Digit = {
     ['1']='1', ['2']='2', ['3']='3',
     ['4']='4', ['5']='5', ['6']='6',
     ['7']='7', ['8']='8', ['9']='9',
@@ -138,7 +141,7 @@ Digit = {
     [',']='.'   -- decimal comma is silently converted
 }
 
-Uppercase = {
+_M.Uppercase = {
     A='A', B='B', C='C', D='D',
     E='E', F='F', G='G', H='H',
     I='I', J='J', K='K', L='L',
@@ -148,7 +151,7 @@ Uppercase = {
     Y='Y', Z='Z'
 }
 
-Lowercase = {
+_M.Lowercase = {
     a='a', b='b', c='c', d='d',
     e='e', f='f', g='g', h='h',
     i='i', j='j', k='k', l='l',
@@ -158,19 +161,14 @@ Lowercase = {
     y='y', z='z'
 }
 
-Operator = {   [' ']=' ',
+_M.Operator = {   [' ']='',
     ['*']='*', ['/']='/',
-    ['+']='+', ['-']='-'
+    ['+']='+', ['-']='-',
 }
 
-local s = ''
--- initialize formula string that we have to parse
-if #arg > 0 then
-    s = arg[1]
-else
-    print "Enter formula: "
-    s = io.read()
-end
+_M.err = false
+
+function _M.StoichCalc(s)
 
 local i, j = 1, 1   -- string iterators
 local l = string.len(s)
@@ -183,15 +181,15 @@ local c, out = '', ''
 
 while i <= l do
     c = string.sub(s, i, j)
-    if Digit[c] then
-        if el then out = out..Element[el]..'*'; el = false
+    if _M.Digit[c] then
+        if el then out = out..(_M.Element[el] or "??")..'*'; el = false
         elseif string.len(out)>1 and string.sub(out, -1) == ')' then
             out = out..'*'
         elseif f and not nr then out = out..')'; f = false
         end
-        nr = nr and nr..Digit[c] or Digit[c]
-    elseif Uppercase[c] then
-        if el then out = out..Element[el]..'+'
+        nr = nr and nr.._M.Digit[c] or _M.Digit[c]
+    elseif _M.Uppercase[c] then
+        if el then out = out..(_M.Element[el] or "??")..'+'
         elseif nr then
             if f then out = out..nr..'+'
             else out = out..nr..'*'
@@ -202,34 +200,58 @@ while i <= l do
         repeat
             j = j+1
             el = string.sub(s, j, j)
-        until (not Lowercase[el])
+        until (not _M.Lowercase[el])
         el = string.sub(s, i, j-1)
     elseif c == '(' then
         if nr then out = out..nr..'+'; nr = false
-        elseif el then out = out..Element[el]..'+'; el = false
+        elseif el then out = out..(_M.Element[el] or "??")..'+'; el = false
         end
         out = out..c
     elseif c == ')' then
         if nr then out = out..nr; nr = false
-        elseif el then out = out..Element[el]; el = false
+        elseif el then out = out..(_M.Element[el] or "??"); el = false
         end
         out = out..c
-    elseif Operator[c] then
+    elseif _M.Operator[c] then
         if nr then out = out..nr; nr = false
-        elseif el then out = out..Element[el]; el = false
+        elseif el then out = out..(_M.Element[el] or "??"); el = false
         end
         if f then out = out..')'; f = false end
         out = out..c
+    else
+        out = out .. "?"
     end --if
     if (j>i) then i=j; else i=i+1; j=i; end
 --    print (out) -- for debugging
 end -- while
 
 if nr then out = out..nr
-elseif el then out = out..Element[el]
+elseif el then out = out..(_M.Element[el] or "??")
 end
-if f then out = out..')' end
-print (out.." = ")
 
-local eval = assert(loadstring("return " ..out))
-print (eval())
+if f then out = out..')' end
+
+local result = ''
+local nLB, nRB
+
+--basic parsing error checking for missing or surplus brackets and wrong symbols
+if #out > 0 then
+    _, nLB = string.gsub(out, "%(", "")
+    _, nRB = string.gsub(out, "%)", "")
+    if not (nLB == nRB) then
+        _M.err=true; result = result .. "Error parsing input - check brackets! Found " .. nLB .. "( and " .. nRB .. ")!"
+    end
+    if string.find(out, "%?") then
+        _M.err=true; result = result .. " Error parsing element symbols - check for ??"
+    end
+end
+
+if not _M.err then
+    local eval = assert(loadstring("return " .. out), "Unknown error!")
+    result = eval()
+end
+
+return out, result
+end --function StoichCalc
+
+return _M
