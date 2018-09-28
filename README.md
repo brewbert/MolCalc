@@ -1,4 +1,5 @@
-#MolCalc
+MolCalc
+=======
 
 Copyright (c) 2010-2018 Ing. Hubert HANGHOFER,
 Licensed under the GPL (see sources)
