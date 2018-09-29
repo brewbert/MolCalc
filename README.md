@@ -29,8 +29,7 @@ symbol errors but doesn't detect, if a chemical formula is
 valid or your computations make sense.
 
 molcalc.lua is a module containing the parser function as used
-on <https://molcalc.com> in a [WSAPI-fastcgi environment]
-(https://keplerproject.github.io/wsapi/index.html).
+on <https://molcalc.com> in a [WSAPI-fastcgi environment](https://keplerproject.github.io/wsapi/index.html).
 
 If you need a version for your desktop, you could try
 the [python code](https://github.com/brewbert/wxMol)
