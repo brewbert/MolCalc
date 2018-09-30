@@ -18,7 +18,7 @@ Purpose and Usage
 MolCalc is a stoichiometric parser. It translates chemical element
 symbols to their corresponding atomic weights and enables simple
 arithmetic calculations. For example, to calculate the percentage
-of Aluminium in Alaun, you could enter:
+of Aluminium in Aluminiumsulfate-Hexadecahydrate, you could enter:
 
 Al2/(Al2(SO4)3+16H2O)*100
 
