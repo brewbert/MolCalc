@@ -132,6 +132,8 @@ Uun=271.0,
 Uuu=272.0
 }
 
+
+
 _M.Digit = {
     ['1']='1', ['2']='2', ['3']='3',
     ['4']='4', ['5']='5', ['6']='6',
@@ -140,6 +142,8 @@ _M.Digit = {
     ['.']='.',
     [',']='.'   -- decimal comma is silently converted
 }
+
+
 
 _M.Uppercase = {
     A='A', B='B', C='C', D='D',
@@ -151,6 +155,8 @@ _M.Uppercase = {
     Y='Y', Z='Z'
 }
 
+
+
 _M.Lowercase = {
     a='a', b='b', c='c', d='d',
     e='e', f='f', g='g', h='h',
@@ -161,13 +167,21 @@ _M.Lowercase = {
     y='y', z='z'
 }
 
+
+
 _M.Operator = {   [' ']='',
     ['*']='*', ['/']='/',
     ['+']='+', ['-']='-',
 }
 
+
+
 _M.err = false
 
+
+--[[*************************
+StoichCalc(s) Parser function
+*****************************]]
 function _M.StoichCalc(s)
 
 local i, j = 1, 1   -- string iterators
@@ -179,6 +193,7 @@ local f = false
 -- buffers holding current character and output
 local c, out = '', ''
 
+-- main loop
 while i <= l do
     c = string.sub(s, i, j)
     if _M.Digit[c] then
@@ -222,36 +237,57 @@ while i <= l do
         out = out .. "?"
     end --if
     if (j>i) then i=j; else i=i+1; j=i; end
---    print (out) -- for debugging
-end -- while
+end -- main loop
 
-if nr then out = out..nr
-elseif el then out = out..(_M.Element[el] or "??")
-end
-
-if f then out = out..')' end
-
-local result = ''
-local nLB, nRB
-
---basic parsing error checking for missing or surplus brackets and wrong symbols
-if #out > 0 then
-    _, nLB = string.gsub(out, "%(", "")
-    _, nRB = string.gsub(out, "%)", "")
-    if not (nLB == nRB) then
-        _M.err=true; result = result .. "Error parsing input - check brackets! Found " .. nLB .. "( and " .. nRB .. ")!"
+-- finish unparsed tokens
+    if nr then out = out..nr
+        elseif el then out = out..(_M.Element[el] or "??")
     end
-    if string.find(out, "%?") then
-        _M.err=true; result = result .. " Error parsing element symbols - check for ??"
-    end
-end
 
-if not _M.err then
-    local eval = assert(loadstring("return " .. out), "Unknown error!")
-    result = eval()
-end
+    if f then out = out..')' end
+
+-- basic error handling of bracketing, wrong symbols and runtime errors
+    local result = ''
+    local nLB, nRB
+
+    if #out > 0 then
+        _, nLB = string.gsub(out, "%(", "")
+        _, nRB = string.gsub(out, "%)", "")
+        if not (nLB == nRB) then
+            _M.err=true; result = result .. "Error parsing input - check brackets in translation! Found " .. nLB .. "( and " .. nRB .. ")! "
+        end
+        if string.find(out, "%?") then
+            _M.err=true; result = result .. "Error parsing element symbols - check translation for ?? "
+        end
+    end
+
+    if not _M.err then
+        local success
+        success, result = pcall(loadstring("return " .. out))
+        if not success then
+            _M.err=true
+            result = "Syntax error! Check computed translation!"
+        end
+    end
 
 return out, result
-end --function StoichCalc
+end --function StoichCalc()
+
+
+
+--[[**************************************
+Cli() Command Line Interface and debugging
+******************************************]]
+function _M.Cli(s)
+    -- initialize formula string that we have to parse
+    local input = s
+    if not input then
+        print "Enter formula: "
+        input = io.read()
+    end
+    return _M.StoichCalc(input)
+end --function Cli()
+
+
 
 return _M
