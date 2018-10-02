@@ -4,7 +4,7 @@ MolCalc
 Copyright (c) 2010-2018 Ing. Hubert HANGHOFER,
 Licensed under the GPL (see sources)
 
-This is the lua version of <https://github.com/brewbert/wxMol> as
+This is the [lua version](https://www.lua.org/) of <https://github.com/brewbert/wxMol> as
 used as lua-module on <https://molcalc.com>
 
 Sources are available from the repositories at
@@ -33,5 +33,5 @@ on <https://molcalc.com> in a [WSAPI-fastcgi environment](https://keplerproject.
 
 If you need a version for your desktop, you could try
 the [python code](https://github.com/brewbert/wxMol)
-or download the windows binaries derived thereof from:
+or download the packages or windows binaries derived thereof from:
 <http://hanghofer.net/~hubert/python/>
