@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 --[[
-Copyright 2002-2018 Hubert Hanghofer -- hanghofer.net
+Copyright 2010-2021 Hubert Hanghofer -- hubert.hanghofer.net
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -139,8 +139,7 @@ _M.Digit = {
     ['4']='4', ['5']='5', ['6']='6',
     ['7']='7', ['8']='8', ['9']='9',
     ['0']='0',
-    ['.']='.',
-    [',']='.'   -- decimal comma is silently converted
+    ['.']='.', [',']='.'   -- decimal comma is silently converted
 }
 
 
@@ -169,7 +168,8 @@ _M.Lowercase = {
 
 
 
-_M.Operator = {   [' ']='',
+_M.Operator = {
+    [' ']='', ['%']='%',
     ['*']='*', ['/']='/',
     ['+']='+', ['-']='-',
 }
@@ -231,8 +231,11 @@ while i <= l do
         if nr then out = out..nr; nr = false
         elseif el then out = out..(_M.Element[el] or "??"); el = false
         end
-        if f then out = out..')'; f = false end
-        out = out..c
+        if f then out = out..')'; f = false
+        end
+        if c == '%' then out = out..'*100'
+        else out = out..c
+        end
     else
         out = out .. "?"
     end --if
@@ -287,7 +290,5 @@ function _M.Cli(s)
     end
     return _M.StoichCalc(input)
 end --function Cli()
-
-
 
 return _M
