@@ -20,7 +20,7 @@ symbols to their corresponding atomic weights and enables simple
 arithmetic calculations. For example, to calculate the percentage
 of Aluminium in Aluminiumsulfate-Hexadecahydrate, you could enter:
 
-Al2/(Al2(SO4)3+16H2O)*100
+Al2/(Al2(SO4)3+16H2O)%
 
 The converted input is returned along with the result, so that
 you can check if the calculation was done according to your
