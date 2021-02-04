@@ -1,7 +1,7 @@
 MolCalc
 =======
 
-Copyright (c) 2010-2018 Ing. Hubert HANGHOFER,
+Copyright (c) 2010-2021 Ing. Hubert HANGHOFER,
 Licensed under the GPL (see sources)
 
 This is the [lua version](https://www.lua.org/) of <https://github.com/brewbert/wxMol> as
